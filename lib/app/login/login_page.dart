@@ -1,5 +1,8 @@
+import 'package:college/college.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:interface_login_01/routes.dart';
+//import 'package:college/collge.dart';
 import 'package:routefly/routefly.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -17,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
       computed(() => login().isNotEmpty && password().isNotEmpty);
   final passwordError = signal<String?>(null);
 
-  validateForm() {
+  validateForm() async {
     var ok = false;
     if (password().length > 6) {
       passwordError.value = null;
@@ -27,7 +30,17 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if(ok) {
-      debugPrint("ok validado");
+      final api = College().getControllerHelloWorldApi();
+      final String nome = login(); // String |
+
+      try {
+        final response = await api.helloWorld( nome: nome);
+        print(response);
+      } on DioException catch (e) {
+        print("Exception when calling ControllerHelloWorldApi->helloWorld: $e\n");
+      };
+
+    debugPrint("ok validado");
       Routefly.push(routePaths.home);
       
     }
@@ -112,10 +125,15 @@ class _LoginPageState extends State<LoginPage> {
               const Spacer(
                 flex: 2,
               ),
-              const Flexible(
+              Flexible(
                 flex: 2,
-                child: Text(
-                  'You have pushed the button this many d:',
+                child: TextButton(
+                  onPressed: () {
+                    Routefly.push(routePaths.prefs);
+                  },
+                  child: const Text(
+                    'Alterar URL Servidor:',
+                  ),
                 ),
               ),
             ],

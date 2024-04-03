@@ -1,0 +1,91 @@
+//
+// AUTO-GENERATED FILE, DO NOT MODIFY!
+//
+
+import 'package:dio/dio.dart';
+import 'package:built_value/serializer.dart';
+import 'package:college/src/serializers.dart';
+import 'package:college/src/auth/api_key_auth.dart';
+import 'package:college/src/auth/basic_auth.dart';
+import 'package:college/src/auth/bearer_auth.dart';
+import 'package:college/src/auth/oauth.dart';
+import 'package:college/src/api/controller_hello_world_api.dart';
+import 'package:college/src/api/student_controller_api.dart';
+
+class College {
+  static const String basePath = r'http://10.200.0.155:8080';
+
+  final Dio dio;
+  final Serializers serializers;
+
+  College({
+    Dio? dio,
+    Serializers? serializers,
+    String? basePathOverride,
+    List<Interceptor>? interceptors,
+  })  : this.serializers = serializers ?? standardSerializers,
+        this.dio = dio ??
+            Dio(BaseOptions(
+              baseUrl: basePathOverride ?? basePath,
+              connectTimeout: const Duration(milliseconds: 5000),
+              receiveTimeout: const Duration(milliseconds: 3000),
+            )) {
+    if (interceptors == null) {
+      this.dio.interceptors.addAll([
+        OAuthInterceptor(),
+        BasicAuthInterceptor(),
+        BearerAuthInterceptor(),
+        ApiKeyAuthInterceptor(),
+      ]);
+    } else {
+      this.dio.interceptors.addAll(interceptors);
+    }
+  }
+
+  void setOAuthToken(String name, String token) {
+    if (this.dio.interceptors.any((i) => i is OAuthInterceptor)) {
+      (this.dio.interceptors.firstWhere((i) => i is OAuthInterceptor)
+              as OAuthInterceptor)
+          .tokens[name] = token;
+    }
+  }
+
+  void setBearerAuth(String name, String token) {
+    if (this.dio.interceptors.any((i) => i is BearerAuthInterceptor)) {
+      (this.dio.interceptors.firstWhere((i) => i is BearerAuthInterceptor)
+              as BearerAuthInterceptor)
+          .tokens[name] = token;
+    }
+  }
+
+  void setBasicAuth(String name, String username, String password) {
+    if (this.dio.interceptors.any((i) => i is BasicAuthInterceptor)) {
+      (this.dio.interceptors.firstWhere((i) => i is BasicAuthInterceptor)
+              as BasicAuthInterceptor)
+          .authInfo[name] = BasicAuthInfo(username, password);
+    }
+  }
+
+  void setApiKey(String name, String apiKey) {
+    if (this.dio.interceptors.any((i) => i is ApiKeyAuthInterceptor)) {
+      (this
+                  .dio
+                  .interceptors
+                  .firstWhere((element) => element is ApiKeyAuthInterceptor)
+              as ApiKeyAuthInterceptor)
+          .apiKeys[name] = apiKey;
+    }
+  }
+
+  /// Get ControllerHelloWorldApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  ControllerHelloWorldApi getControllerHelloWorldApi() {
+    return ControllerHelloWorldApi(dio, serializers);
+  }
+
+  /// Get StudentControllerApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  StudentControllerApi getStudentControllerApi() {
+    return StudentControllerApi(dio, serializers);
+  }
+}

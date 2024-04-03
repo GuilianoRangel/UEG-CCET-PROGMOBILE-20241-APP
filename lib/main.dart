@@ -7,7 +7,8 @@ import 'routes.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs =await SharedPreferences.getInstance();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  
   
   runApp(const MyApp());
 }

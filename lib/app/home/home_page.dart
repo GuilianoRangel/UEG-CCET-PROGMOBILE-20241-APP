@@ -5,16 +5,7 @@ import 'package:signals/signals_flutter.dart';
 
 class HomePage extends StatefulWidget {
   
-  Route routeBuilder(BuildContext context, RouteSettings settings) {
-    return PageRouteBuilder(
-      settings: settings, // <- !! DON'T FORGET THAT !!
-      pageBuilder: (_, a1, a2) => const HomePage(),
-      transitionDuration: const Duration(seconds: 5),
-      transitionsBuilder: (_, a1, a2, child) {
-        return FadeTransition(opacity: a1, child: child);
-      },
-    );
-  }
+
   const HomePage({super.key});
 
   @override
