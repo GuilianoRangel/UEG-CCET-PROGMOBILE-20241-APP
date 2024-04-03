@@ -1,9 +1,11 @@
 import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:interface_login_01/routes.dart';
 //import 'package:college/collge.dart';
 import 'package:routefly/routefly.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals/signals_flutter.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,11 +16,28 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final url = signal('');
+
   final login = signal('');
   final password = signal('');
   late final isValid =
       computed(() => login().isNotEmpty && password().isNotEmpty);
   final passwordError = signal<String?>(null);
+
+  @override
+  void initState() {
+    _loadPreferences();
+    super.initState();
+  }
+
+  // Method to load the shared preference data
+  void _loadPreferences() {
+    //WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    SchedulerBinding.instance.scheduleFrameCallback((timeStamp) async {
+      final prefs = await SharedPreferences.getInstance();
+      url.set(prefs.getString('URL') ?? 'http://192.168.10.100');
+    });
+  }
 
   validateForm() async {
     var ok = false;
@@ -30,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if(ok) {
-      final api = College().getControllerHelloWorldApi();
+      final api = College(basePathOverride: url()).getControllerHelloWorldApi();
       final String nome = login(); // String |
 
       try {
