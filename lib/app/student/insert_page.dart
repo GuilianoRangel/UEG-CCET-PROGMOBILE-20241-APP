@@ -3,25 +3,27 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:interface_login_01/routes.dart';
+
 //import 'package:college/collge.dart';
 import 'package:routefly/routefly.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals/signals_flutter.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class InsertPage extends StatefulWidget {
+  const InsertPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<InsertPage> createState() => _InsertPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _InsertPageState extends State<InsertPage> {
   final url = signal('');
 
-  final login = signal('');
-  final password = signal('');
-  late final isValid =
-      computed(() => login().isNotEmpty && password().isNotEmpty);
+  final name = signal('');
+  final course = signal('');
+  final registerNumber = signal('');
+  late final isValid = computed(() =>
+      name().isNotEmpty && course().isNotEmpty && registerNumber().isNotEmpty);
   final passwordError = signal<String?>(null);
 
   @override
@@ -40,43 +42,64 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   validateForm() async {
+    debugPrint(course());
     var ok = false;
-    if (password().length > 6) {
+    if (course().length > 6) {
       passwordError.value = null;
       ok = true;
     } else {
       passwordError.value = 'Erro! Mínimo de 6 caracteres';
     }
 
-    if(ok) {
-      debugPrint("URL %ss"+url());
-      final helloWorldApi = College(basePathOverride: url()).getControllerHelloWorldApi();
-      final studentApi = College(basePathOverride: url()).getStudentControllerApi();
-      final String nome = login(); // String |
+    if (ok) {
+      debugPrint("URL %ss" + url());
+
+      final studentApi =
+          College(basePathOverride: url()).getStudentControllerApi();
+      final String nome = name(); // String |
 
       try {
-        final response = await helloWorldApi.helloWorld( nome: nome);
-        print(response);
-        final responseList = await studentApi.listAll();
+        final student = CreateStudentDTOBuilder();
+        student.registerNumber = registerNumber();
+        student.name = name();
+        student.course = course();
+
+        final responseList =
+            await studentApi.create(createStudentDTO: student.build());
         debugPrint("Dados Alunos");
         debugPrint(responseList.data.toString());
-        responseList.data?.forEach((p0) {
-          debugPrint("Aluno: "+p0.name);
-        });
-
       } on DioException catch (e) {
-        print("Exception when calling ControllerHelloWorldApi->helloWorld: $e\n");
+        if (e.response?.statusCode == 400) {
+          var message = e.response?.data as String;
+          showMessage(message);
+        } else if (e.response?.statusCode == 428) {
+          showMessage(e.response?.data as String);
+        } else {
+          print(
+              "Exception when calling ControllerHelloWorldApi->helloWorld: $e\n");
+          showMessage(e.response?.data as String);
+        }
+        return;
       };
 
-    debugPrint("ok validado");
-      Routefly.navigate(routePaths.student.home);
-      
+      debugPrint("ok validado");
+      Routefly.pop(context);
     }
+  }
+  @override
+  deactivate(){
+    debugPrint("Deactivate insert");
+    super.deactivate();
+  }
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message, style: TextStyle(fontSize: 22.0)),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    _LoginPageState();
+    _InsertPageState();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -112,9 +135,9 @@ class _LoginPageState extends State<LoginPage> {
               Flexible(
                   flex: 3,
                   child: TextField(
-                    onChanged: login.set,
+                    onChanged: name.set,
                     decoration: const InputDecoration(
-                        border: OutlineInputBorder(), label: Text("email")),
+                        border: OutlineInputBorder(), label: Text("Nome")),
                   )),
               const Spacer(
                 flex: 1,
@@ -122,23 +145,26 @@ class _LoginPageState extends State<LoginPage> {
               Flexible(
                   flex: 3,
                   child: TextField(
-                    onChanged: password.set,
+                    onChanged: course.set,
                     decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        label: const Text("password"),
+                        label: const Text("curso"),
                         errorText: passwordError.watch(context)),
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    obscureText: true,
                   )),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Flexible(
-                  flex: 2,
-                  child: Text(
-                    'Forget password',
-                  ),
-                ),
+              const Spacer(
+                flex: 1,
+              ),
+              Flexible(
+                  flex: 3,
+                  child: TextField(
+                    onChanged: registerNumber.set,
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        label: const Text("Matricula"),
+                        errorText: passwordError.watch(context)),
+                  )),
+              const Spacer(
+                flex: 1,
               ),
               Flexible(
                 flex: 3,
@@ -147,28 +173,23 @@ class _LoginPageState extends State<LoginPage> {
                   heightFactor: 0.4,
                   child: FilledButton(
                     onPressed: isValid.watch(context) ? validateForm : null,
-                    child: const Text('Login'),
+                    child: const Text('Salvar'),
                   ),
                 ),
-              ),
-              const Spacer(
-                flex: 2,
-              ),
-              Flexible(
-                flex: 2,
-                child: TextButton(
-                  onPressed: () {
-                    Routefly.push(routePaths.prefs);
-                  },
-                  child: const Text(
-                    'Alterar URL Servidor:',
-                  ),
-                ),
-              ),
+              )
             ],
           ),
         ),
       ),
+    );
+  }
+  
+  Route routeBuilder(BuildContext context, RouteSettings settings) {
+    return PageRouteBuilder(
+      pageBuilder: (_, a1, a2) => const InsertPage(),
+      transitionsBuilder: (_, a1, a2, child) {
+        return FadeTransition(opacity: a1, child: child);
+      },
     );
   }
 }

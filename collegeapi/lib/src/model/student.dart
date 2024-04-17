@@ -12,21 +12,21 @@ part 'student.g.dart';
 /// Student
 ///
 /// Properties:
+/// * [name]
 /// * [id]
 /// * [registerNumber]
-/// * [name]
 /// * [course]
 /// * [createdDate]
 @BuiltValue()
 abstract class Student implements Built<Student, StudentBuilder> {
+  @BuiltValueField(wireName: r'name')
+  String get name;
+
   @BuiltValueField(wireName: r'id')
   int? get id;
 
   @BuiltValueField(wireName: r'registerNumber')
   String? get registerNumber;
-
-  @BuiltValueField(wireName: r'name')
-  String? get name;
 
   @BuiltValueField(wireName: r'course')
   String? get course;
@@ -57,6 +57,11 @@ class _$StudentSerializer implements PrimitiveSerializer<Student> {
     Student object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
+    yield r'name';
+    yield serializers.serialize(
+      object.name,
+      specifiedType: const FullType(String),
+    );
     if (object.id != null) {
       yield r'id';
       yield serializers.serialize(
@@ -68,13 +73,6 @@ class _$StudentSerializer implements PrimitiveSerializer<Student> {
       yield r'registerNumber';
       yield serializers.serialize(
         object.registerNumber,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.name != null) {
-      yield r'name';
-      yield serializers.serialize(
-        object.name,
         specifiedType: const FullType(String),
       );
     }
@@ -117,6 +115,13 @@ class _$StudentSerializer implements PrimitiveSerializer<Student> {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
+        case r'name':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.name = valueDes;
+          break;
         case r'id':
           final valueDes = serializers.deserialize(
             value,
@@ -130,13 +135,6 @@ class _$StudentSerializer implements PrimitiveSerializer<Student> {
             specifiedType: const FullType(String),
           ) as String;
           result.registerNumber = valueDes;
-          break;
-        case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.name = valueDes;
           break;
         case r'course':
           final valueDes = serializers.deserialize(

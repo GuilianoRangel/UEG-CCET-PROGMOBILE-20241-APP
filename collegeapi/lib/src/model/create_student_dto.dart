@@ -11,19 +11,19 @@ part 'create_student_dto.g.dart';
 /// CreateStudentDTO
 ///
 /// Properties:
-/// * [registerNumber] - Número de matricula
 /// * [name] - Nome do aluno
+/// * [registerNumber] - Número de matricula
 /// * [course] - Nome do Curso
 @BuiltValue()
 abstract class CreateStudentDTO
     implements Built<CreateStudentDTO, CreateStudentDTOBuilder> {
+  /// Nome do aluno
+  @BuiltValueField(wireName: r'name')
+  String get name;
+
   /// Número de matricula
   @BuiltValueField(wireName: r'registerNumber')
   String? get registerNumber;
-
-  /// Nome do aluno
-  @BuiltValueField(wireName: r'name')
-  String? get name;
 
   /// Nome do Curso
   @BuiltValueField(wireName: r'course')
@@ -55,17 +55,15 @@ class _$CreateStudentDTOSerializer
     CreateStudentDTO object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
+    yield r'name';
+    yield serializers.serialize(
+      object.name,
+      specifiedType: const FullType(String),
+    );
     if (object.registerNumber != null) {
       yield r'registerNumber';
       yield serializers.serialize(
         object.registerNumber,
-        specifiedType: const FullType(String),
-      );
-    }
-    if (object.name != null) {
-      yield r'name';
-      yield serializers.serialize(
-        object.name,
         specifiedType: const FullType(String),
       );
     }
@@ -101,19 +99,19 @@ class _$CreateStudentDTOSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'registerNumber':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.registerNumber = valueDes;
-          break;
         case r'name':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
           result.name = valueDes;
+          break;
+        case r'registerNumber':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.registerNumber = valueDes;
           break;
         case r'course':
           final valueDes = serializers.deserialize(

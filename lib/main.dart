@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: Routefly.routerConfig(
         routes: routes, // GENERATED
-        initialPath: routePaths.login,
+        initialPath: routePaths.student.home,
         routeBuilder: (context, settings, child) {
           return MaterialPageRoute(
             settings: settings, // !! IMPORTANT !!

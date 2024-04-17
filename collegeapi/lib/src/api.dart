@@ -13,7 +13,7 @@ import 'package:college/src/api/controller_hello_world_api.dart';
 import 'package:college/src/api/student_controller_api.dart';
 
 class College {
-  static const String basePath = r'http://10.200.0.155:8080';
+  static const String basePath = r'http://localhost:8080';
 
   final Dio dio;
   final Serializers serializers;

@@ -8,9 +8,9 @@ part of 'create_student_dto.dart';
 
 class _$CreateStudentDTO extends CreateStudentDTO {
   @override
-  final String? registerNumber;
+  final String name;
   @override
-  final String? name;
+  final String? registerNumber;
   @override
   final String? course;
 
@@ -18,8 +18,10 @@ class _$CreateStudentDTO extends CreateStudentDTO {
           [void Function(CreateStudentDTOBuilder)? updates]) =>
       (new CreateStudentDTOBuilder()..update(updates))._build();
 
-  _$CreateStudentDTO._({this.registerNumber, this.name, this.course})
-      : super._();
+  _$CreateStudentDTO._({required this.name, this.registerNumber, this.course})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(name, r'CreateStudentDTO', 'name');
+  }
 
   @override
   CreateStudentDTO rebuild(void Function(CreateStudentDTOBuilder) updates) =>
@@ -33,16 +35,16 @@ class _$CreateStudentDTO extends CreateStudentDTO {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is CreateStudentDTO &&
-        registerNumber == other.registerNumber &&
         name == other.name &&
+        registerNumber == other.registerNumber &&
         course == other.course;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
-    _$hash = $jc(_$hash, registerNumber.hashCode);
     _$hash = $jc(_$hash, name.hashCode);
+    _$hash = $jc(_$hash, registerNumber.hashCode);
     _$hash = $jc(_$hash, course.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -51,8 +53,8 @@ class _$CreateStudentDTO extends CreateStudentDTO {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'CreateStudentDTO')
-          ..add('registerNumber', registerNumber)
           ..add('name', name)
+          ..add('registerNumber', registerNumber)
           ..add('course', course))
         .toString();
   }
@@ -62,14 +64,14 @@ class CreateStudentDTOBuilder
     implements Builder<CreateStudentDTO, CreateStudentDTOBuilder> {
   _$CreateStudentDTO? _$v;
 
+  String? _name;
+  String? get name => _$this._name;
+  set name(String? name) => _$this._name = name;
+
   String? _registerNumber;
   String? get registerNumber => _$this._registerNumber;
   set registerNumber(String? registerNumber) =>
       _$this._registerNumber = registerNumber;
-
-  String? _name;
-  String? get name => _$this._name;
-  set name(String? name) => _$this._name = name;
 
   String? _course;
   String? get course => _$this._course;
@@ -82,8 +84,8 @@ class CreateStudentDTOBuilder
   CreateStudentDTOBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
-      _registerNumber = $v.registerNumber;
       _name = $v.name;
+      _registerNumber = $v.registerNumber;
       _course = $v.course;
       _$v = null;
     }
@@ -107,7 +109,10 @@ class CreateStudentDTOBuilder
   _$CreateStudentDTO _build() {
     final _$result = _$v ??
         new _$CreateStudentDTO._(
-            registerNumber: registerNumber, name: name, course: course);
+            name: BuiltValueNullFieldError.checkNotNull(
+                name, r'CreateStudentDTO', 'name'),
+            registerNumber: registerNumber,
+            course: course);
     replace(_$result);
     return _$result;
   }

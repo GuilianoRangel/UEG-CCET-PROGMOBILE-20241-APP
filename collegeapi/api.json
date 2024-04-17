@@ -1,367 +1,373 @@
 {
-   "openapi":"3.0.1",
-   "info":{
-      "title":"OpenAPI College",
-      "version":"v0"
-   },
-   "servers":[
-      {
-         "url":"http://10.200.0.155:8080",
-         "description":"Generated server url"
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/api/v1/student/{id}": {
+      "get": {
+        "tags": [
+          "student-controller"
+        ],
+        "description": "End point para obter dados de aluno",
+        "operationId": "getById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "student-controller"
+        ],
+        "description": "End point para inclusão de aluno",
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStudentDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "student-controller"
+        ],
+        "description": "End point para remover dados de aluno",
+        "operationId": "remove",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
       }
-   ],
-   "paths":{
-      "/api/v1/student/{id}":{
-         "get":{
-            "tags":[
-               "student-controller"
-            ],
-            "description":"End point para obter dados de aluno",
-            "operationId":"getById",
-            "parameters":[
-               {
-                  "name":"id",
-                  "in":"path",
-                  "required":true,
-                  "schema":{
-                     "type":"integer",
-                     "format":"int64"
+    },
+    "/api/v1/student": {
+      "get": {
+        "tags": [
+          "student-controller"
+        ],
+        "description": "lista todos os estudantes",
+        "operationId": "listAll",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Student"
                   }
-               }
-            ],
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"object"
-                        }
-                     }
-                  }
-               }
+                }
+              }
             }
-         },
-         "put":{
-            "tags":[
-               "student-controller"
-            ],
-            "description":"End point para inclusão de aluno",
-            "operationId":"update",
-            "parameters":[
-               {
-                  "name":"id",
-                  "in":"path",
-                  "required":true,
-                  "schema":{
-                     "type":"integer",
-                     "format":"int64"
-                  }
-               }
-            ],
-            "requestBody":{
-               "content":{
-                  "application/json":{
-                     "schema":{
-                        "$ref":"#/components/schemas/UpdateStudentDTO"
-                     }
-                  }
-               },
-               "required":true
-            },
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"object"
-                        }
-                     }
-                  }
-               }
-            }
-         },
-         "delete":{
-            "tags":[
-               "student-controller"
-            ],
-            "description":"End point para remover dados de aluno",
-            "operationId":"remove",
-            "parameters":[
-               {
-                  "name":"id",
-                  "in":"path",
-                  "required":true,
-                  "schema":{
-                     "type":"integer",
-                     "format":"int64"
-                  }
-               }
-            ],
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"object"
-                        }
-                     }
-                  }
-               }
-            }
-         }
+          }
+        }
       },
-      "/api/v1/student":{
-         "get":{
-            "tags":[
-               "student-controller"
-            ],
-            "description":"lista todos os estudantes",
-            "operationId":"listAll",
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"array",
-                           "items":{
-                              "$ref":"#/components/schemas/Student"
-                           }
-                        }
-                     }
-                  }
-               }
+      "post": {
+        "tags": [
+          "student-controller"
+        ],
+        "description": "End point para inclusão de aluno",
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStudentDTO"
+              }
             }
-         },
-         "post":{
-            "tags":[
-               "student-controller"
-            ],
-            "description":"End point para inclusão de aluno",
-            "operationId":"create",
-            "requestBody":{
-               "content":{
-                  "application/json":{
-                     "schema":{
-                        "$ref":"#/components/schemas/CreateStudentDTO"
-                     }
-                  }
-               },
-               "required":true
-            },
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"object"
-                        }
-                     }
-                  }
-               }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
             }
-         }
-      },
-      "/api/v1/aula01/{nome}":{
-         "post":{
-            "tags":[
-               "controller-hello-world"
-            ],
-            "operationId":"HelloWorld",
-            "parameters":[
-               {
-                  "name":"nome",
-                  "in":"path",
-                  "required":true,
-                  "schema":{
-                     "type":"string"
-                  }
-               }
-            ],
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"string"
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      },
-      "/api/v1/aula01/body":{
-         "post":{
-            "tags":[
-               "controller-hello-world"
-            ],
-            "operationId":"HelloWorldBody",
-            "requestBody":{
-               "content":{
-                  "application/json":{
-                     "schema":{
-                        "type":"string"
-                     }
-                  }
-               },
-               "required":true
-            },
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"string"
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      },
-      "/api/v1/aula01/body2":{
-         "post":{
-            "tags":[
-               "controller-hello-world"
-            ],
-            "operationId":"HelloWorldBody_1",
-            "requestBody":{
-               "content":{
-                  "application/json":{
-                     "schema":{
-                        "type":"array",
-                        "items":{
-                           "type":"string"
-                        }
-                     }
-                  }
-               },
-               "required":true
-            },
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"array",
-                           "items":{
-                              "type":"string"
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      },
-      "/api/v1/student/yesterday-registers":{
-         "get":{
-            "tags":[
-               "student-controller"
-            ],
-            "description":"lista todos os estudantes matriculados antes de hoje",
-            "operationId":"listYesterdayRegisters",
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"array",
-                           "items":{
-                              "$ref":"#/components/schemas/Student"
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      },
-      "/api/v1/aula01":{
-         "get":{
-            "tags":[
-               "controller-hello-world"
-            ],
-            "operationId":"HelloWorld_1",
-            "responses":{
-               "200":{
-                  "description":"OK",
-                  "content":{
-                     "*/*":{
-                        "schema":{
-                           "type":"string"
-                        }
-                     }
-                  }
-               }
-            }
-         }
+          }
+        }
       }
-   },
-   "components":{
-      "schemas":{
-         "UpdateStudentDTO":{
-            "type":"object",
-            "properties":{
-               "name":{
-                  "type":"string"
-               },
-               "course":{
-                  "type":"string"
-               }
+    },
+    "/api/v1/aula01/{nome}": {
+      "post": {
+        "tags": [
+          "controller-hello-world"
+        ],
+        "operationId": "HelloWorld",
+        "parameters": [
+          {
+            "name": "nome",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
-         },
-         "CreateStudentDTO":{
-            "type":"object",
-            "properties":{
-               "registerNumber":{
-                  "type":"string",
-                  "description":"Número de matricula",
-                  "example":"22222"
-               },
-               "name":{
-                  "type":"string",
-                  "description":"Nome do aluno",
-                  "example":"nome do aluno"
-               },
-               "course":{
-                  "type":"string",
-                  "description":"Nome do Curso",
-                  "example":"Sistemas"
-               }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
-         },
-         "Student":{
-            "type":"object",
-            "properties":{
-               "id":{
-                  "type":"integer",
-                  "format":"int64"
-               },
-               "registerNumber":{
-                  "type":"string"
-               },
-               "name":{
-                  "type":"string"
-               },
-               "course":{
-                  "type":"string"
-               },
-               "createdDate":{
-                  "type":"string",
-                  "format":"date"
-               }
-            }
-         }
+          }
+        }
       }
-   }
+    },
+    "/api/v1/aula01/body": {
+      "post": {
+        "tags": [
+          "controller-hello-world"
+        ],
+        "operationId": "HelloWorldBody",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aula01/body2": {
+      "post": {
+        "tags": [
+          "controller-hello-world"
+        ],
+        "operationId": "HelloWorldBody_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/student/yesterday-registers": {
+      "get": {
+        "tags": [
+          "student-controller"
+        ],
+        "description": "lista todos os estudantes matriculados antes de hoje",
+        "operationId": "listYesterdayRegisters",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Student"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/aula01": {
+      "get": {
+        "tags": [
+          "controller-hello-world"
+        ],
+        "operationId": "HelloWorld_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateStudentDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "course": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateStudentDTO": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "registerNumber": {
+            "type": "string",
+            "description": "Número de matricula",
+            "example": "22222"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do aluno",
+            "example": "nome do aluno"
+          },
+          "course": {
+            "type": "string",
+            "description": "Nome do Curso",
+            "example": "Sistemas"
+          }
+        }
+      },
+      "Student": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "registerNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "course": {
+            "type": "string"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    }
+  }
 }

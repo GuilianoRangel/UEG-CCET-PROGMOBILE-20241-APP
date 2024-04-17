@@ -8,11 +8,11 @@ part of 'student.dart';
 
 class _$Student extends Student {
   @override
+  final String name;
+  @override
   final int? id;
   @override
   final String? registerNumber;
-  @override
-  final String? name;
   @override
   final String? course;
   @override
@@ -22,8 +22,14 @@ class _$Student extends Student {
       (new StudentBuilder()..update(updates))._build();
 
   _$Student._(
-      {this.id, this.registerNumber, this.name, this.course, this.createdDate})
-      : super._();
+      {required this.name,
+      this.id,
+      this.registerNumber,
+      this.course,
+      this.createdDate})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(name, r'Student', 'name');
+  }
 
   @override
   Student rebuild(void Function(StudentBuilder) updates) =>
@@ -36,9 +42,9 @@ class _$Student extends Student {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Student &&
+        name == other.name &&
         id == other.id &&
         registerNumber == other.registerNumber &&
-        name == other.name &&
         course == other.course &&
         createdDate == other.createdDate;
   }
@@ -46,9 +52,9 @@ class _$Student extends Student {
   @override
   int get hashCode {
     var _$hash = 0;
+    _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, registerNumber.hashCode);
-    _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, course.hashCode);
     _$hash = $jc(_$hash, createdDate.hashCode);
     _$hash = $jf(_$hash);
@@ -58,9 +64,9 @@ class _$Student extends Student {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'Student')
+          ..add('name', name)
           ..add('id', id)
           ..add('registerNumber', registerNumber)
-          ..add('name', name)
           ..add('course', course)
           ..add('createdDate', createdDate))
         .toString();
@@ -70,6 +76,10 @@ class _$Student extends Student {
 class StudentBuilder implements Builder<Student, StudentBuilder> {
   _$Student? _$v;
 
+  String? _name;
+  String? get name => _$this._name;
+  set name(String? name) => _$this._name = name;
+
   int? _id;
   int? get id => _$this._id;
   set id(int? id) => _$this._id = id;
@@ -78,10 +88,6 @@ class StudentBuilder implements Builder<Student, StudentBuilder> {
   String? get registerNumber => _$this._registerNumber;
   set registerNumber(String? registerNumber) =>
       _$this._registerNumber = registerNumber;
-
-  String? _name;
-  String? get name => _$this._name;
-  set name(String? name) => _$this._name = name;
 
   String? _course;
   String? get course => _$this._course;
@@ -98,9 +104,9 @@ class StudentBuilder implements Builder<Student, StudentBuilder> {
   StudentBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
+      _name = $v.name;
       _id = $v.id;
       _registerNumber = $v.registerNumber;
-      _name = $v.name;
       _course = $v.course;
       _createdDate = $v.createdDate;
       _$v = null;
@@ -125,9 +131,10 @@ class StudentBuilder implements Builder<Student, StudentBuilder> {
   _$Student _build() {
     final _$result = _$v ??
         new _$Student._(
+            name:
+                BuiltValueNullFieldError.checkNotNull(name, r'Student', 'name'),
             id: id,
             registerNumber: registerNumber,
-            name: name,
             course: course,
             createdDate: createdDate);
     replace(_$result);

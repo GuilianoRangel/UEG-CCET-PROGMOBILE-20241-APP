@@ -8,9 +8,9 @@ import 'package:college/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**name** | **String** |  | 
 **id** | **int** |  | [optional] 
 **registerNumber** | **String** |  | [optional] 
-**name** | **String** |  | [optional] 
 **course** | **String** |  | [optional] 
 **createdDate** | [**Date**](Date.md) |  | [optional] 
 
