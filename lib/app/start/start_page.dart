@@ -17,7 +17,7 @@ class StartPage extends StatefulWidget {
 
 class _StartPageState extends State<StartPage> {
   final url = signal('');
-  StudentControllerApi? studentApi;
+  TipoControllerApi? tipoApi;
 
   @override
   void initState() {
@@ -32,20 +32,20 @@ class _StartPageState extends State<StartPage> {
     //WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
     SharedPreferences.getInstance().then((value) {
       url.set(value.getString('URL') ?? 'http://192.168.10.100');
-      studentApi = College(basePathOverride: url()).getStudentControllerApi();
+      tipoApi = College(basePathOverride: url()).getTipoControllerApi();
     });
   }
 
-  Future<Response<BuiltList<Student>>> _getData() async {
+  Future<Response<BuiltList<TipoDTO>>> _getData() async {
     SharedPreferences pf = await SharedPreferences.getInstance();
 
     url.set(pf.getString('URL') ?? 'http://192.168.10.100');
-    studentApi = College(basePathOverride: url()).getStudentControllerApi();
-    var dado = await studentApi?.listAll();
+    tipoApi = College(basePathOverride: url()).getTipoControllerApi();
+    var dado = await tipoApi?.tipoControllerListAll();
     if (dado != null) {
       return dado;
     }
-    return Future.value([] as FutureOr<Response<BuiltList<Student>>>?);
+    return Future.value([] as FutureOr<Response<BuiltList<TipoDTO>>>?);
   }
 
   @override
@@ -55,10 +55,10 @@ class _StartPageState extends State<StartPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Home da aplicação '),
       ),
-      body: FutureBuilder<Response<BuiltList<Student>>>(
+      body: FutureBuilder<Response<BuiltList<TipoDTO>>>(
           future: _getData(),
           builder:
-              (context, AsyncSnapshot<Response<BuiltList<Student>>> snapshot) {
+              (context, AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot) {
             return buildListView(snapshot);
           }),
       bottomNavigationBar: Container(
@@ -77,7 +77,7 @@ class _StartPageState extends State<StartPage> {
     );
   }
 
-  Widget buildListView(AsyncSnapshot<Response<BuiltList<Student>>> snapshot) {
+  Widget buildListView(AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot) {
     if (snapshot.hasData) {
       return ListView.builder(
         itemCount: snapshot.data?.data?.length,
@@ -108,10 +108,10 @@ class _StartPageState extends State<StartPage> {
                 children: <Widget>[
                   ListTile(
                     leading: Icon(Icons.account_box, size: 60),
-                    title: Text("nome:${snapshot.data!.data?[index].name}",
+                    title: Text("nome:${snapshot.data!.data?[index].nome}",
                         style: TextStyle(fontSize: 22.0)),
                     subtitle: Text(
-                        "curso:${snapshot.data!.data?[index].course}",
+                        "curso:${snapshot.data!.data?[index].status}",
                         style: TextStyle(fontSize: 18.0)),
                   ),
                   ButtonBar(
@@ -144,7 +144,7 @@ class _StartPageState extends State<StartPage> {
   }
 
   Text buildItemList(
-      AsyncSnapshot<Response<BuiltList<Student>>> snapshot, int index) {
+      AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot, int index) {
     debugPrint("coisa");
     debugPrint(snapshot?.data.toString());
     return Text("nome:${snapshot.data!.data?[index]}");
@@ -161,11 +161,11 @@ class _StartPageState extends State<StartPage> {
   }
 
   _createRows() async {
-    final studentApi =
-        College(basePathOverride: url()).getStudentControllerApi();
+    final tipoApi =
+        College(basePathOverride: url()).getTipoControllerApi();
 
     try {
-      final responseList = await studentApi.listAll();
+      final responseList = await tipoApi.tipoControllerListAll();
     } on DioException catch (e) {
       print("Exception when calling ControllerHelloWorldApi->helloWorld: $e\n");
     }

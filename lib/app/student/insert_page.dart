@@ -2,9 +2,6 @@ import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:interface_login_01/routes.dart';
-
-//import 'package:college/collge.dart';
 import 'package:routefly/routefly.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals/signals_flutter.dart';
@@ -20,10 +17,10 @@ class _InsertPageState extends State<InsertPage> {
   final url = signal('');
 
   final name = signal('');
-  final course = signal('');
-  final registerNumber = signal('');
+  final dataCriacao = signal<Date>(Date.now());
+  final status = signal<bool>(true);
   late final isValid = computed(() =>
-      name().isNotEmpty && course().isNotEmpty && registerNumber().isNotEmpty);
+      name().isNotEmpty);
   final passwordError = signal<String?>(null);
 
   @override
@@ -42,9 +39,9 @@ class _InsertPageState extends State<InsertPage> {
   }
 
   validateForm() async {
-    debugPrint(course());
+    debugPrint(dataCriacao().toString());
     var ok = false;
-    if (course().length > 6) {
+    if (name().length > 4) {
       passwordError.value = null;
       ok = true;
     } else {
@@ -54,18 +51,17 @@ class _InsertPageState extends State<InsertPage> {
     if (ok) {
       debugPrint("URL %ss" + url());
 
-      final studentApi =
-          College(basePathOverride: url()).getStudentControllerApi();
+      final tipoApi =
+          College(basePathOverride: url()).getTipoControllerApi();
       final String nome = name(); // String |
 
       try {
-        final student = CreateStudentDTOBuilder();
-        student.registerNumber = registerNumber();
-        student.name = name();
-        student.course = course();
+        final tipoDto = TipoDTOBuilder();
+        tipoDto.nome = name();
+        tipoDto.dataCriacao = dataCriacao();
 
         final responseList =
-            await studentApi.create(createStudentDTO: student.build());
+            await tipoApi.tipoControllerIncluir(tipoDTO: tipoDto.build());
         debugPrint("Dados Alunos");
         debugPrint(responseList.data.toString());
       } on DioException catch (e) {
@@ -145,7 +141,7 @@ class _InsertPageState extends State<InsertPage> {
               Flexible(
                   flex: 3,
                   child: TextField(
-                    onChanged: course.set,
+                    //onChanged: dataCriacao.set,
                     decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         label: const Text("curso"),
@@ -157,7 +153,7 @@ class _InsertPageState extends State<InsertPage> {
               Flexible(
                   flex: 3,
                   child: TextField(
-                    onChanged: registerNumber.set,
+                    //onChanged: status.set,
                     decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         label: const Text("Matricula"),

@@ -1,82 +1,105 @@
 import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:interface_login_01/app/utils/preference_state.dart';
 import 'package:interface_login_01/routes.dart';
-//import 'package:college/collge.dart';
+import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals/signals_flutter.dart';
+
+import '../api/AppAPI.dart';
+import 'login_state.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  static Route<void> route() {
+    return MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => MultiProvider(
+              providers: [
+                Provider(
+                  create: (_) => context.read<SharedPreferenceState>(),
+                  dispose: (_, instance) => instance.dispose(),
+                ),
+                Provider(create: (_) => context.read<AppAPI>())
+              ],
+              child: const LoginPage(),
+            )
+    );
+  }
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final url = signal('');
+  LoginState state = LoginState();
+  late AppAPI appAPI;
+  late College collegeApi;
 
-  final login = signal('');
-  final password = signal('');
-  late final isValid =
-      computed(() => login().isNotEmpty && password().isNotEmpty);
-  final passwordError = signal<String?>(null);
-
-  @override
-  void initState() {
-    _loadPreferences();
-    super.initState();
+  void showMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message, style: const TextStyle(fontSize: 22.0)),
+    ));
   }
 
-  // Method to load the shared preference data
-  void _loadPreferences() {
-    //WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-    SchedulerBinding.instance.scheduleFrameCallback((timeStamp) async {
-      final prefs = await SharedPreferences.getInstance();
-      url.set(prefs.getString('URL') ?? 'http://192.168.10.100');
-    });
-  }
-
-  validateForm() async {
+  validateForm(BuildContext context) async {
     var ok = false;
-    if (password().length > 6) {
-      passwordError.value = null;
+    if (state.password().length > 4) {
+      state.passwordError.value = null;
       ok = true;
     } else {
-      passwordError.value = 'Erro! Mínimo de 6 caracteres';
+      state.passwordError.value = 'Erro! Mínimo de 6 caracteres';
     }
 
-    if(ok) {
-      debugPrint("URL %ss"+url());
-      final helloWorldApi = College(basePathOverride: url()).getControllerHelloWorldApi();
-      final studentApi = College(basePathOverride: url()).getStudentControllerApi();
-      final String nome = login(); // String |
+    if (ok) {
+      final authApi = collegeApi.getAuthAPIApi();
+      //if(authApi ==  null) return;
 
       try {
-        final response = await helloWorldApi.helloWorld( nome: nome);
-        print(response);
-        final responseList = await studentApi.listAll();
-        debugPrint("Dados Alunos");
+        var authBuilder = AuthDTOBuilder();
+        authBuilder.login = state.login();
+        authBuilder.senha = state.password();
+
+        final responseList = await authApi.login(authDTO: authBuilder.build());
+        debugPrint("Dados do Login");
         debugPrint(responseList.data.toString());
-        responseList.data?.forEach((p0) {
-          debugPrint("Aluno: "+p0.name);
-        });
-
+        if (responseList.statusCode == 200) {
+          appAPI.token.set(responseList.data!.accessToken!);
+          Routefly.navigate(routePaths.student.home);
+        } else {
+          message() {
+            showMessage(context, "Login Falhou: ${responseList.data}");
+          }
+          message();
+        }
       } on DioException catch (e) {
-        print("Exception when calling ControllerHelloWorldApi->helloWorld: $e\n");
-      };
+        MessageResponseBuilder responseBuilder = MessageResponseBuilder();
+        responseBuilder.message = e.response?.data["message"];
+        responseBuilder.status = e.response?.data["status"];
+        responseBuilder.error = e.response?.data["error"];
+        responseBuilder.code = e.response?.data["code"];
+        MessageResponse response = responseBuilder.build();
 
-    debugPrint("ok validado");
-      Routefly.navigate(routePaths.student.home);
-      
+
+        message() {
+
+          showMessage(context, "Login Falhou: ${response.message}");
+        }
+        message();
+        print(
+            "Exception when calling ControllerHelloWorldApi->helloWorld: $e\n${e.response}");
+      }
+      ;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    _LoginPageState();
+    appAPI = context.read<AppAPI>();
+    collegeApi = appAPI.api;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -112,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
               Flexible(
                   flex: 3,
                   child: TextField(
-                    onChanged: login.set,
+                    onChanged: this.state.login.set,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(), label: Text("email")),
                   )),
@@ -122,11 +145,11 @@ class _LoginPageState extends State<LoginPage> {
               Flexible(
                   flex: 3,
                   child: TextField(
-                    onChanged: password.set,
+                    onChanged: this.state.password.set,
                     decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         label: const Text("password"),
-                        errorText: passwordError.watch(context)),
+                        errorText: this.state.passwordError.watch(context)),
                     enableSuggestions: false,
                     autocorrect: false,
                     obscureText: true,
@@ -146,7 +169,9 @@ class _LoginPageState extends State<LoginPage> {
                   widthFactor: 0.4,
                   heightFactor: 0.4,
                   child: FilledButton(
-                    onPressed: isValid.watch(context) ? validateForm : null,
+                    onPressed: this.state.isValid.watch(context)
+                        ? () => {validateForm(context)}
+                        : null,
                     child: const Text('Login'),
                   ),
                 ),

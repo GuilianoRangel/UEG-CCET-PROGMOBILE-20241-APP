@@ -9,8 +9,16 @@ import 'package:college/src/auth/api_key_auth.dart';
 import 'package:college/src/auth/basic_auth.dart';
 import 'package:college/src/auth/bearer_auth.dart';
 import 'package:college/src/auth/oauth.dart';
-import 'package:college/src/api/controller_hello_world_api.dart';
-import 'package:college/src/api/student_controller_api.dart';
+import 'package:college/src/api/amigo_controller_api.dart';
+import 'package:college/src/api/auth_api_api.dart';
+import 'package:college/src/api/discente_controller_api.dart';
+import 'package:college/src/api/funcionario_controller_api.dart';
+import 'package:college/src/api/grupo_api_api.dart';
+import 'package:college/src/api/local_controller_api.dart';
+import 'package:college/src/api/mdulo_sistema_api_api.dart';
+import 'package:college/src/api/pessoa_controller_api.dart';
+import 'package:college/src/api/tipo_controller_api.dart';
+import 'package:college/src/api/usuario_api_api.dart';
 
 class College {
   static const String basePath = r'http://localhost:8080';
@@ -77,15 +85,63 @@ class College {
     }
   }
 
-  /// Get ControllerHelloWorldApi instance, base route and serializer can be overridden by a given but be careful,
+  /// Get AmigoControllerApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
-  ControllerHelloWorldApi getControllerHelloWorldApi() {
-    return ControllerHelloWorldApi(dio, serializers);
+  AmigoControllerApi getAmigoControllerApi() {
+    return AmigoControllerApi(dio, serializers);
   }
 
-  /// Get StudentControllerApi instance, base route and serializer can be overridden by a given but be careful,
+  /// Get AuthAPIApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
-  StudentControllerApi getStudentControllerApi() {
-    return StudentControllerApi(dio, serializers);
+  AuthAPIApi getAuthAPIApi() {
+    return AuthAPIApi(dio, serializers);
+  }
+
+  /// Get DiscenteControllerApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  DiscenteControllerApi getDiscenteControllerApi() {
+    return DiscenteControllerApi(dio, serializers);
+  }
+
+  /// Get FuncionarioControllerApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  FuncionarioControllerApi getFuncionarioControllerApi() {
+    return FuncionarioControllerApi(dio, serializers);
+  }
+
+  /// Get GrupoAPIApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  GrupoAPIApi getGrupoAPIApi() {
+    return GrupoAPIApi(dio, serializers);
+  }
+
+  /// Get LocalControllerApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  LocalControllerApi getLocalControllerApi() {
+    return LocalControllerApi(dio, serializers);
+  }
+
+  /// Get MduloSistemaAPIApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  MduloSistemaAPIApi getMduloSistemaAPIApi() {
+    return MduloSistemaAPIApi(dio, serializers);
+  }
+
+  /// Get PessoaControllerApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  PessoaControllerApi getPessoaControllerApi() {
+    return PessoaControllerApi(dio, serializers);
+  }
+
+  /// Get TipoControllerApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  TipoControllerApi getTipoControllerApi() {
+    return TipoControllerApi(dio, serializers);
+  }
+
+  /// Get UsuarioAPIApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  UsuarioAPIApi getUsuarioAPIApi() {
+    return UsuarioAPIApi(dio, serializers);
   }
 }

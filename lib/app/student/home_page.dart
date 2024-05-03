@@ -1,67 +1,59 @@
 import 'dart:async';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:built_collection/built_collection.dart';
+import 'package:interface_login_01/app/api/AppAPI.dart';
+import 'package:interface_login_01/app/utils/preference_state.dart';
 import 'package:interface_login_01/routes.dart';
+import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:signals/signals_flutter.dart';
 
-class StartPage extends StatefulWidget {
+class StartPage extends StatelessWidget {
   const StartPage({super.key});
 
-  @override
-  State<StartPage> createState() => _StartPageState();
-}
-
-class _StartPageState extends State<StartPage> {
-  final url = signal('');
-  StudentControllerApi? studentApi;
-
-  @override
-  void initState() {
-    _loadPreferences();
-    debugPrint("URL init start" + url());
-
-    super.initState();
+  static Route<void> route() {
+    return MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (context) => MultiProvider(
+        providers: [
+          Provider(create: (_) => context.read<SharedPreferenceState>(),
+            dispose: (_, instance) => instance.dispose() ,),
+          Provider(create: (_) => context.read<AppAPI>())
+        ],
+        child: const StartPage(),
+      )
+    );
   }
 
-  // Method to load the shared preference data
-  void _loadPreferences() {
-    //WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-    SharedPreferences.getInstance().then((value) {
-      url.set(value.getString('URL') ?? 'http://192.168.10.100');
-      studentApi = College(basePathOverride: url()).getStudentControllerApi();
-    });
-  }
+  Future<Response<BuiltList<TipoDTO>>> _getData(TipoControllerApi tipoApi) async {
 
-  Future<Response<BuiltList<Student>>> _getData() async {
-    SharedPreferences pf = await SharedPreferences.getInstance();
 
-    url.set(pf.getString('URL') ?? 'http://192.168.10.100');
-    studentApi = College(basePathOverride: url()).getStudentControllerApi();
-    var dado = await studentApi?.listAll();
-    if (dado != null) {
+    try {
+      var dado = await tipoApi.tipoControllerListAll();
+      debugPrint("home-page:data:$dado");
       return dado;
+    } on DioException catch (e) {
+      debugPrint("Erro home:"+e.response.toString());
+      return Future.value([] as FutureOr<Response<BuiltList<TipoDTO>>>?);
     }
-    return Future.value([] as FutureOr<Response<BuiltList<Student>>>?);
   }
 
   @override
   Widget build(BuildContext context) {
+    TipoControllerApi? tipoApi = context.read<AppAPI>().api.getTipoControllerApi();
+    debugPrint("home-page-tipoApi:$tipoApi");
     debugPrint("Build Home page student");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Home da aplicação '),
       ),
-      body: FutureBuilder<Response<BuiltList<Student>>>(
-          future: _getData(),
+      body: FutureBuilder<Response<BuiltList<TipoDTO>>>(
+          future: _getData(tipoApi),
           builder:
-              (context, AsyncSnapshot<Response<BuiltList<Student>>> snapshot) {
+              (context, AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot) {
             return buildListView(snapshot);
           }),
       bottomNavigationBar: Container(
@@ -79,9 +71,9 @@ class _StartPageState extends State<StartPage> {
                   debugPrint("insert - ");
                   Routefly.pushNavigate(routePaths.student.insert).then(
                           (_)
-                  {
-                    debugPrint("voltei home");
-                  });
+                      {
+                        debugPrint("voltei home");
+                      });
                 },
               )
             ],
@@ -89,7 +81,7 @@ class _StartPageState extends State<StartPage> {
     );
   }
 
-  Widget buildListView(AsyncSnapshot<Response<BuiltList<Student>>> snapshot) {
+  Widget buildListView(AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot) {
     if (snapshot.hasData) {
       return ListView.builder(
         itemCount: snapshot.data?.data?.length,
@@ -97,45 +89,45 @@ class _StartPageState extends State<StartPage> {
           debugPrint("Index:${index}");
           return Center(
               child: Container(
-            //height: 100,
-            //width: 200,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              color: Colors.blue.withAlpha(70),
-              elevation: 10,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.account_box, size: 60),
-                    title: Text("nome:${snapshot.data!.data?[index].name}",
-                        style: TextStyle(fontSize: 22.0)),
-                    subtitle: Text(
-                        "curso:${snapshot.data!.data?[index].course}",
-                        style: TextStyle(fontSize: 18.0)),
+                //height: 100,
+                //width: 200,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
-                  ButtonBar(
+                  color: Colors.blue.withAlpha(70),
+                  elevation: 10,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      ElevatedButton(
-                        child: const Text('Editar'),
-                        onPressed: () {
-                          /* ... */
-                        },
+                      ListTile(
+                        leading: Icon(Icons.account_box, size: 60),
+                        title: Text("nome:${snapshot.data!.data?[index].nome}",
+                            style: TextStyle(fontSize: 22.0)),
+                        subtitle: Text(
+                            "status:${snapshot.data!.data?[index].status}",
+                            style: TextStyle(fontSize: 18.0)),
                       ),
-                      ElevatedButton(
-                        child: const Text('Excluir'),
-                        onPressed: () {
-                          /* ... */
-                        },
+                      ButtonBar(
+                        children: <Widget>[
+                          ElevatedButton(
+                            child: const Text('Editar'),
+                            onPressed: () {
+                              /* ... */
+                            },
+                          ),
+                          ElevatedButton(
+                            child: const Text('Excluir'),
+                            onPressed: () {
+                              /* ... */
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ));
+                ),
+              ));
         },
       );
     } else if (snapshot.hasError) {
@@ -146,35 +138,10 @@ class _StartPageState extends State<StartPage> {
   }
 
   Text buildItemList(
-      AsyncSnapshot<Response<BuiltList<Student>>> snapshot, int index) {
+      AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot, int index) {
     debugPrint("coisa");
-    debugPrint(snapshot?.data.toString());
+    debugPrint(snapshot.data.toString());
     return Text("nome:${snapshot.data!.data?[index]}");
-  }
-
-
-
-  @override
-  dispose(){
-    debugPrint("Disponse call ed;");
-    super.dispose();
-  }
-  @override
-  deactivate(){
-    debugPrint("Deactivate");
-    super.deactivate();
-  }
-
-  @override
-  void activate() {
-    debugPrint("HOme activate");
-    // TODO: implement activate
-    super.activate();
-  }
-  @override
-  void didChangeDependencies() {
-    print("didChangeDependencies");
-    super.didChangeDependencies();
   }
 
 }
