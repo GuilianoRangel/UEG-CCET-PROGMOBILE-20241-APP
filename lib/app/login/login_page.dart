@@ -1,7 +1,7 @@
 import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:interface_login_01/app/utils/preference_state.dart';
+import 'package:interface_login_01/app/utils/config_state.dart';
 import 'package:interface_login_01/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
@@ -19,7 +19,7 @@ class LoginPage extends StatefulWidget {
         builder: (context) => MultiProvider(
               providers: [
                 Provider(
-                  create: (_) => context.read<SharedPreferenceState>(),
+                  create: (_) => context.read<ConfigState>(),
                   dispose: (_, instance) => instance.dispose(),
                 ),
                 Provider(create: (_) => context.read<AppAPI>())
@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
         debugPrint("Dados do Login");
         debugPrint(responseList.data.toString());
         if (responseList.statusCode == 200) {
-          appAPI.token.set(responseList.data!.accessToken!);
+          appAPI.config.token.set(responseList.data!.accessToken!);
           Routefly.navigate(routePaths.student.home);
         } else {
           message() {

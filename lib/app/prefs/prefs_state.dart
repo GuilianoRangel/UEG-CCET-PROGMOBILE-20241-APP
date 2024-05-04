@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
-import 'package:interface_login_01/app/utils/preference_state.dart';
+import 'package:interface_login_01/app/utils/config_state.dart';
 import 'package:signals/signals.dart';
 
 class PrefsState {
   late Signal<String> url;
   late Computed<bool> isValid;
   late Signal<String?> urlError;
-  late final SharedPreferenceState? prefs;
+  late final ConfigState? prefs;
   late GlobalKey<FormState> formKey;
   late TextEditingController urlTextController;
   PrefsState(){

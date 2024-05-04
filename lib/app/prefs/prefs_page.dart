@@ -1,12 +1,9 @@
-import 'package:college/college.dart';
 import 'package:flutter/material.dart';
-import 'package:interface_login_01/app/prefs/prefs_state.dart';
 import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../api/AppAPI.dart';
-import '../utils/preference_state.dart';
 
 class PrefsPage extends StatefulWidget {
   const PrefsPage({super.key});
@@ -16,9 +13,8 @@ class PrefsPage extends StatefulWidget {
         fullscreenDialog: true,
         builder: (context) => MultiProvider(
           providers: [
-            Provider(create: (_) => context.read<SharedPreferenceState>(),
-              dispose: (_, instance) => instance.dispose() ,),
-            Provider(create: (_) => context.read<AppAPI>())
+            Provider(create: (_) => context.read<AppAPI>(),
+            dispose: (_, instance) => instance.dispose(),)
           ],
           builder: (context, child) {
             return PrefsPage();
@@ -36,15 +32,14 @@ class _PrefsPageState extends State<PrefsPage> {
 
   final formKey = GlobalKey<FormState>();
   final urlTextController = TextEditingController();
- /* late final isValid = computed(() {
+  late final isValid = computed(() {
     debugPrint("isValid Compute: ${url()}");
     return url().isNotEmpty;
-  });*/
+  });
   //late final isValid = computed(() => url().isNotEmpty);
   final Signal<String?> urlError = signal<String?>(null);
 
-  SharedPreferenceState? prefs;
-  College? collegeApi;
+  AppAPI? appAPI;
 
   validateForm(BuildContext context) async {
     var ok = false;
@@ -57,8 +52,8 @@ class _PrefsPageState extends State<PrefsPage> {
 
     if (ok) {
       debugPrint("ok validado");
-      prefs?.url.set(url());
-      collegeApi?.dio.options.baseUrl = url();
+      appAPI?.config.url.set(url());
+
 
       Routefly.pop(context);
     }
@@ -66,10 +61,9 @@ class _PrefsPageState extends State<PrefsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if(prefs == null) {
-      prefs = context.read<SharedPreferenceState>();
-      collegeApi = context.read<AppAPI>().api;
-      url.value = prefs!.url();
+    if(appAPI == null) {
+      appAPI = context.read<AppAPI>();
+      url.set(appAPI?.config.url() ?? "");
       urlTextController.text = url();
     }
 
@@ -115,8 +109,8 @@ class _PrefsPageState extends State<PrefsPage> {
                     heightFactor: 0.4,
                     child: Row(children: [
                       FilledButton(
-                        //onPressed: isValid.watch(context) ? () => {validateForm(context)} : null,
-                        onPressed: true ? () => {validateForm(context)} : null,
+                        onPressed: isValid.watch(context) ? () => {validateForm(context)} : null,
+                        //onPressed: true ? () => {validateForm(context)} : null,
                         child: const Text('Salvar'),
                       ),
                       const Spacer(

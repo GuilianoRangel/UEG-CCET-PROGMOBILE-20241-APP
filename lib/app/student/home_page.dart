@@ -5,7 +5,7 @@ import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:interface_login_01/app/api/AppAPI.dart';
-import 'package:interface_login_01/app/utils/preference_state.dart';
+import 'package:interface_login_01/app/utils/config_state.dart';
 import 'package:interface_login_01/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
@@ -18,7 +18,7 @@ class StartPage extends StatelessWidget {
       fullscreenDialog: true,
       builder: (context) => MultiProvider(
         providers: [
-          Provider(create: (_) => context.read<SharedPreferenceState>(),
+          Provider(create: (_) => context.read<ConfigState>(),
             dispose: (_, instance) => instance.dispose() ,),
           Provider(create: (_) => context.read<AppAPI>())
         ],

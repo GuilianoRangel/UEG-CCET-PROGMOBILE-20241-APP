@@ -1,31 +1,25 @@
-import 'package:college/college.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:interface_login_01/app/utils/preference_state.dart';
+import 'package:interface_login_01/app/utils/config_state.dart';
 import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'pages/login-form/login_form_page.dart';
-//import 'app/login/login_page.dart';
+
 import 'app/api/AppAPI.dart';
+import 'app/utils/security-store.dart';
+import 'app/utils/shared-preference-store.dart';
 import 'routes.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  final state = SharedPreferenceState(prefs: prefs);
 
-  state.url.set(prefs.getString('URL') ?? 'http://192.168.100.7:8080');
-  final appAPI = AppAPI();
-  final collegeApi = College(basePathOverride: state.url(),
-      interceptors: [
-        InterceptorsWrapper(onRequest: (options, handler) {
-          options.headers['Authorization'] = 'Bearer '+appAPI.token();
-          return handler.next(options);
-        })
-      ]);
+  //SharedPreferences prefs = await SharedPreferences.getInstance();
+  //final storage = SharedPreferenceStore(prefs);
 
-  appAPI.api = collegeApi;
+  final storage = SecurityStore();
+
+  final state = ConfigState(prefs: storage);
+
+  final appAPI = AppAPI(config: state);
   
   runApp(
     MultiProvider(
