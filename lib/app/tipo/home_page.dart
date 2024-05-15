@@ -5,12 +5,15 @@ import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:interface_login_01/app/api/AppAPI.dart';
+import 'package:interface_login_01/app/tipo/insert_page.dart';
 import 'package:interface_login_01/app/utils/config_state.dart';
 import 'package:interface_login_01/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
+import 'package:signals/signals.dart';
+import 'package:signals/signals_flutter.dart';
 
-class StartPage extends StatelessWidget {
+class StartPage extends StatefulWidget {
   const StartPage({super.key});
 
   static Route<void> route() {
@@ -27,9 +30,14 @@ class StartPage extends StatelessWidget {
     );
   }
 
-  Future<Response<BuiltList<TipoDTO>>> _getData(TipoControllerApi tipoApi) async {
+  @override
+  State<StartPage> createState() => _StartPageState();
+}
 
-
+class _StartPageState extends State<StartPage> {
+  Signal<String> inclusao = signal<String>('');
+  Future<Response<BuiltList<TipoDTO>>> _getData(
+      TipoControllerApi tipoApi, String refres) async {
     try {
       var dado = await tipoApi.tipoControllerListAll();
       debugPrint("home-page:data:$dado");
@@ -40,8 +48,15 @@ class StartPage extends StatelessWidget {
     }
   }
 
+  void showMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message, style: const TextStyle(fontSize: 22.0)),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
+    debugPrint("routerlfy:"+Routefly.query.params.toString());
     TipoControllerApi? tipoApi = context.read<AppAPI>().api.getTipoControllerApi();
     debugPrint("home-page-tipoApi:$tipoApi");
     debugPrint("Build Home page student");
@@ -51,7 +66,7 @@ class StartPage extends StatelessWidget {
         title: Text('Home da aplicação '),
       ),
       body: FutureBuilder<Response<BuiltList<TipoDTO>>>(
-          future: _getData(tipoApi),
+          future: _getData(tipoApi, inclusao.watch(context)),
           builder:
               (context, AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot) {
             return buildListView(snapshot);
@@ -67,13 +82,16 @@ class StartPage extends StatelessWidget {
             ),
               IconButton(
                 icon: const Icon(Icons.add),
-                onPressed: () {
+                onPressed: () async {
                   debugPrint("insert - ");
-                  Routefly.pushNavigate(routePaths.student.insert).then(
-                          (_)
-                      {
-                        debugPrint("voltei home");
-                      });
+                  String? refresh = await Navigator.push<String>(
+                    context,
+                    MaterialPageRoute(builder: (context) => const InsertPage()),
+                  );
+                  if(refresh!.isNotEmpty){
+                    inclusao.set(refresh);
+                    showMessage(context, refresh);
+                  }
                 },
               )
             ],

@@ -1,58 +1,55 @@
 import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:routefly/routefly.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'package:signals/signals_flutter.dart';
+
+import '../api/AppAPI.dart';
 
 class InsertPage extends StatefulWidget {
   const InsertPage({super.key});
+
+  static Route<void> route() {
+    return MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => MultiProvider(
+              providers: [
+                Provider(
+                  create: (_) => context.read<AppAPI>(),
+                  dispose: (_, instance) => instance.dispose(),
+                )
+              ],
+              builder: (context, child) {
+                return const InsertPage();
+              },
+            ));
+  }
 
   @override
   State<InsertPage> createState() => _InsertPageState();
 }
 
 class _InsertPageState extends State<InsertPage> {
-  final url = signal('');
+  AppAPI? appAPI;
 
   final name = signal('');
   final dataCriacao = signal<Date>(Date.now());
-  final status = signal<bool>(true);
-  late final isValid = computed(() =>
-      name().isNotEmpty);
-  final passwordError = signal<String?>(null);
+  late final isValid = computed(() => name().isNotEmpty);
+  final nameError = signal<String?>(null);
 
-  @override
-  void initState() {
-    _loadPreferences();
-    super.initState();
-  }
-
-  // Method to load the shared preference data
-  void _loadPreferences() {
-    //WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-    SchedulerBinding.instance.scheduleFrameCallback((timeStamp) async {
-      final prefs = await SharedPreferences.getInstance();
-      url.set(prefs.getString('URL') ?? 'http://192.168.10.100');
-    });
-  }
-
-  validateForm() async {
+  validateForm(BuildContext context) async {
     debugPrint(dataCriacao().toString());
     var ok = false;
     if (name().length > 4) {
-      passwordError.value = null;
+      nameError.value = null;
       ok = true;
     } else {
-      passwordError.value = 'Erro! Mínimo de 6 caracteres';
+      nameError.value = 'Erro! Mínimo de 6 caracteres';
     }
 
     if (ok) {
-      debugPrint("URL %ss" + url());
 
-      final tipoApi =
-          College(basePathOverride: url()).getTipoControllerApi();
+      final tipoApi = appAPI?.api.getTipoControllerApi();
       final String nome = name(); // String |
 
       try {
@@ -61,9 +58,9 @@ class _InsertPageState extends State<InsertPage> {
         tipoDto.dataCriacao = dataCriacao();
 
         final responseList =
-            await tipoApi.tipoControllerIncluir(tipoDTO: tipoDto.build());
+            await tipoApi?.tipoControllerIncluir(tipoDTO: tipoDto.build());
         debugPrint("Dados Alunos");
-        debugPrint(responseList.data.toString());
+        debugPrint(responseList?.data.toString());
       } on DioException catch (e) {
         if (e.response?.statusCode == 400) {
           var message = e.response?.data as String;
@@ -76,12 +73,13 @@ class _InsertPageState extends State<InsertPage> {
           showMessage(e.response?.data as String);
         }
         return;
-      };
+      }
 
       debugPrint("ok validado");
-      Routefly.pop(context);
+      Navigator.pop(context,"Tipo:${name()} incluído");
     }
   }
+
   @override
   deactivate(){
     debugPrint("Deactivate insert");
@@ -95,11 +93,11 @@ class _InsertPageState extends State<InsertPage> {
 
   @override
   Widget build(BuildContext context) {
-    _InsertPageState();
+    appAPI ??= context.read<AppAPI>();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Tela de login'),
+        title: const Text('Cadastro de tipo'),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -129,36 +127,34 @@ class _InsertPageState extends State<InsertPage> {
                 flex: 2,
               ),
               Flexible(
-                  flex: 3,
-                  child: TextField(
-                    onChanged: name.set,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(), label: Text("Nome")),
-                  )),
+                flex: 3,
+                child: TextField(
+                  onChanged: name.set,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      label: Text("Nome"),
+                      errorText: nameError.watch(context)),
+                ),
+              ),
               const Spacer(
                 flex: 1,
               ),
               Flexible(
-                  flex: 3,
-                  child: TextField(
-                    //onChanged: dataCriacao.set,
-                    decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        label: const Text("curso"),
-                        errorText: passwordError.watch(context)),
-                  )),
-              const Spacer(
-                flex: 1,
+                flex: 3,
+                child:
+                    Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  Text(
+                      "Data da Criação: ${dataCriacao.watch(context).toDateTime().toLocal().toString().split(' ')[0]}"
+                          ),
+                  const SizedBox(
+                    width: 20.0,
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _selectDate(context),
+                    child: const Icon(Icons.date_range),
+                  )
+                ]),
               ),
-              Flexible(
-                  flex: 3,
-                  child: TextField(
-                    //onChanged: status.set,
-                    decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        label: const Text("Matricula"),
-                        errorText: passwordError.watch(context)),
-                  )),
               const Spacer(
                 flex: 1,
               ),
@@ -168,7 +164,11 @@ class _InsertPageState extends State<InsertPage> {
                   widthFactor: 0.4,
                   heightFactor: 0.4,
                   child: FilledButton(
-                    onPressed: isValid.watch(context) ? validateForm : null,
+                    onPressed: isValid.watch(context)
+                        ? () {
+                            validateForm(context);
+                          }
+                        : null,
                     child: const Text('Salvar'),
                   ),
                 ),
@@ -179,7 +179,7 @@ class _InsertPageState extends State<InsertPage> {
       ),
     );
   }
-  
+
   Route routeBuilder(BuildContext context, RouteSettings settings) {
     return PageRouteBuilder(
       pageBuilder: (_, a1, a2) => const InsertPage(),
@@ -187,5 +187,17 @@ class _InsertPageState extends State<InsertPage> {
         return FadeTransition(opacity: a1, child: child);
       },
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: dataCriacao().toDateTime(),
+        firstDate: DateTime(2000, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != dataCriacao().toDateTime()) {
+      dataCriacao.set(picked.toDate());
+      debugPrint("Nova data${dataCriacao()}");
+    }
   }
 }

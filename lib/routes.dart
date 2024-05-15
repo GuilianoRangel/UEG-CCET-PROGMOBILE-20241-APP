@@ -5,8 +5,8 @@ import 'app/login/login_page.dart' as a1;
 import 'app/login_form/login_form_page.dart' as a2;
 import 'app/prefs/prefs_page.dart' as a3;
 import 'app/start/start_page.dart' as a4;
-import 'app/student/home_page.dart' as a5;
-import 'app/student/insert_page.dart' as a6;
+import 'app/tipo/home_page.dart' as a5;
+import 'app/tipo/insert_page.dart' as a6;
 
 List<RouteEntity> get routes => [
   RouteEntity(
