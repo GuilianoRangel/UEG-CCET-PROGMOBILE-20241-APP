@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
         debugPrint(responseList.data.toString());
         if (responseList.statusCode == 200) {
           appAPI.config.token.set(responseList.data!.accessToken!);
-          Routefly.navigate(routePaths.student.home);
+          Routefly.navigate(routePaths.tipo.home);
         } else {
           message() {
             showMessage(context, "Login Falhou: ${responseList.data}");

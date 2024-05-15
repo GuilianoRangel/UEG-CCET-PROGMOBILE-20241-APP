@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:interface_login_01/app/utils/config_state.dart';
 import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/api/AppAPI.dart';
 import 'app/utils/security-store.dart';
-import 'app/utils/shared-preference-store.dart';
 import 'routes.dart';
 
 Future<void> main() async{
@@ -47,7 +45,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routerConfig: Routefly.routerConfig(
         routes: routes, // GENERATED
-        initialPath: routePaths.student.home,
+        initialPath: routePaths.tipo.home,
         routeBuilder: (context, settings, child) {
           return MaterialPageRoute(
             settings: settings, // !! IMPORTANT !!

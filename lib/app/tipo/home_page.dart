@@ -6,11 +6,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:interface_login_01/app/api/AppAPI.dart';
 import 'package:interface_login_01/app/tipo/insert_page.dart';
-import 'package:interface_login_01/app/utils/config_state.dart';
 import 'package:interface_login_01/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:routefly/routefly.dart';
-import 'package:signals/signals.dart';
 import 'package:signals/signals_flutter.dart';
 
 class StartPage extends StatefulWidget {
@@ -21,8 +19,6 @@ class StartPage extends StatefulWidget {
       fullscreenDialog: true,
       builder: (context) => MultiProvider(
         providers: [
-          Provider(create: (_) => context.read<ConfigState>(),
-            dispose: (_, instance) => instance.dispose() ,),
           Provider(create: (_) => context.read<AppAPI>())
         ],
         child: const StartPage(),
@@ -36,6 +32,7 @@ class StartPage extends StatefulWidget {
 
 class _StartPageState extends State<StartPage> {
   Signal<String> inclusao = signal<String>('');
+  final ScrollController _controller = ScrollController();
   Future<Response<BuiltList<TipoDTO>>> _getData(
       TipoControllerApi tipoApi, String refres) async {
     try {
@@ -91,6 +88,7 @@ class _StartPageState extends State<StartPage> {
                   if(refresh!.isNotEmpty){
                     inclusao.set(refresh);
                     showMessage(context, refresh);
+                    _scrollDown();
                   }
                 },
               )
@@ -98,10 +96,18 @@ class _StartPageState extends State<StartPage> {
           )),
     );
   }
+  void _scrollDown() {
+    _controller.animateTo(
+      _controller.position.maxScrollExtent,
+      duration: Duration(seconds: 2),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
 
   Widget buildListView(AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot) {
     if (snapshot.hasData) {
       return ListView.builder(
+        controller: _controller,
         itemCount: snapshot.data?.data?.length,
         itemBuilder: (BuildContext context, int index) {
           debugPrint("Index:${index}");

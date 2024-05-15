@@ -55,8 +55,8 @@ List<RouteEntity> get routes => [
     ),
   ),
   RouteEntity(
-    key: '/student/home',
-    uri: Uri.parse('/student/home'),
+    key: '/tipo/home',
+    uri: Uri.parse('/tipo/home'),
     routeBuilder: (ctx, settings) => Routefly.defaultRouteBuilder(
       ctx,
       settings,
@@ -64,13 +64,9 @@ List<RouteEntity> get routes => [
     ),
   ),
   RouteEntity(
-    key: '/student/insert',
-    uri: Uri.parse('/student/insert'),
-    routeBuilder: (ctx, settings) => Routefly.defaultRouteBuilder(
-      ctx,
-      settings,
-      const a6.InsertPage(),
-    ),
+    key: '/tipo/insert',
+    uri: Uri.parse('/tipo/insert'),
+      routeBuilder: a6.routeBuilder,
   ),
 ];
 
@@ -81,9 +77,9 @@ const routePaths = (
   loginForm: '/login_form',
   prefs: '/prefs',
   start: '/start',
-  student: (
-    path: '/student',
-    home: '/student/home',
-    insert: '/student/insert',
+  tipo: (
+    path: '/tipo',
+    home: '/tipo/home',
+    insert: '/tipo/insert',
   ),
 );

@@ -19,9 +19,7 @@ class InsertPage extends StatefulWidget {
                   dispose: (_, instance) => instance.dispose(),
                 )
               ],
-              builder: (context, child) {
-                return const InsertPage();
-              },
+            child: const InsertPage()
             ));
   }
 
@@ -180,15 +178,6 @@ class _InsertPageState extends State<InsertPage> {
     );
   }
 
-  Route routeBuilder(BuildContext context, RouteSettings settings) {
-    return PageRouteBuilder(
-      pageBuilder: (_, a1, a2) => const InsertPage(),
-      transitionsBuilder: (_, a1, a2, child) {
-        return FadeTransition(opacity: a1, child: child);
-      },
-    );
-  }
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -200,4 +189,15 @@ class _InsertPageState extends State<InsertPage> {
       debugPrint("Nova data${dataCriacao()}");
     }
   }
+
 }
+
+Route<dynamic> routeBuilder(BuildContext context, RouteSettings settings) {
+  return PageRouteBuilder(
+    pageBuilder: (_, a1, a2) => const InsertPage(),
+    transitionsBuilder: (_, a1, a2, child) {
+      return FadeTransition(opacity: a1, child: child);
+    },
+  );
+}
+
