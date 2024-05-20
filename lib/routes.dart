@@ -5,6 +5,7 @@ import 'app/login/login_page.dart' as a1;
 import 'app/login_form/login_form_page.dart' as a2;
 import 'app/prefs/prefs_page.dart' as a3;
 import 'app/start/start_page.dart' as a4;
+import 'app/tipo/[id]_page.dart' as a7;
 import 'app/tipo/home_page.dart' as a5;
 import 'app/tipo/insert_page.dart' as a6;
 
@@ -66,7 +67,20 @@ List<RouteEntity> get routes => [
   RouteEntity(
     key: '/tipo/insert',
     uri: Uri.parse('/tipo/insert'),
-      routeBuilder: a6.routeBuilder,
+    routeBuilder: (ctx, settings) => Routefly.defaultRouteBuilder(
+      ctx,
+      settings,
+      const a6.InsertPage(),
+    ),
+  ),
+  RouteEntity(
+    key: '/tipo/[id]',
+    uri: Uri.parse('/tipo/[id]'),
+    routeBuilder: (ctx, settings) => Routefly.defaultRouteBuilder(
+      ctx,
+      settings,
+      const a7.EditPage(),
+    ),
   ),
 ];
 
@@ -81,5 +95,6 @@ const routePaths = (
     path: '/tipo',
     home: '/tipo/home',
     insert: '/tipo/insert',
+    $id: '/tipo/[id]',
   ),
 );

@@ -5,6 +5,7 @@ import 'package:college/college.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:interface_login_01/app/api/AppAPI.dart';
+import 'package:interface_login_01/app/tipo/%5Bid%5D_page.dart';
 import 'package:interface_login_01/app/tipo/insert_page.dart';
 import 'package:interface_login_01/routes.dart';
 import 'package:provider/provider.dart';
@@ -36,9 +37,22 @@ class _StartPageState extends State<StartPage> {
   Future<Response<BuiltList<TipoDTO>>> _getData(
       TipoControllerApi tipoApi, String refres) async {
     try {
-      var dado = await tipoApi.tipoControllerListAll();
+      //var dado = await tipoApi.tipoControllerListAll();
+      var searchFiedlValue = SearchFieldValueBuilder();
+      searchFiedlValue.name="id";
+      searchFiedlValue.searchType = SearchFieldValueSearchTypeEnum.ALL;
+      searchFiedlValue.value = "%%%";
+      searchFiedlValue.type = "Long";
+
+      var fieldValue = searchFiedlValue.build();
+      var dado = await tipoApi.tipoControllerSearchFieldsActionPage(
+          page: 0,
+          size: 1000,
+          sort: ["nome"].toBuiltList(),
+          searchFieldValue: [fieldValue].toBuiltList());
       debugPrint("home-page:data:$dado");
-      return dado;
+      return Future.value(Response<BuiltList<TipoDTO>>(data: dado.data?.content,
+          requestOptions: dado.requestOptions));
     } on DioException catch (e) {
       debugPrint("Erro home:"+e.response.toString());
       return Future.value([] as FutureOr<Response<BuiltList<TipoDTO>>>?);
@@ -62,12 +76,17 @@ class _StartPageState extends State<StartPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Home da aplicação '),
       ),
-      body: FutureBuilder<Response<BuiltList<TipoDTO>>>(
-          future: _getData(tipoApi, inclusao.watch(context)),
-          builder:
-              (context, AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot) {
-            return buildListView(snapshot);
-          }),
+      body: ListenableBuilder(
+        listenable: Routefly.listenable,
+        builder: (context, snapshot) {
+          return FutureBuilder<Response<BuiltList<TipoDTO>>>(
+            future: _getData(tipoApi, inclusao.watch(context)),
+            builder:
+                (context, AsyncSnapshot<Response<BuiltList<TipoDTO>>> snapshot) {
+              return buildListView(snapshot);
+            });
+          },
+      ),
       bottomNavigationBar: Container(
           color: Colors.blue,
           child: Row(
@@ -131,13 +150,23 @@ class _StartPageState extends State<StartPage> {
                         subtitle: Text(
                             "status:${snapshot.data!.data?[index].status}",
                             style: TextStyle(fontSize: 18.0)),
+                        trailing: Text("Data: ${snapshot.data!.data?[index].dataCriacao?.toString()}"),
                       ),
                       ButtonBar(
                         children: <Widget>[
                           ElevatedButton(
                             child: const Text('Editar'),
-                            onPressed: () {
-                              /* ... */
+                            onPressed: ()  {
+                              /*String? refresh = await Navigator.push<String>(
+                                context,
+                                MaterialPageRoute(builder: (context) => const EditPage()),
+                              );
+                              if(refresh!.isNotEmpty){
+                                inclusao.set(refresh);
+                                showMessage(context, refresh);
+                                _scrollDown();
+                              }*/
+                              Routefly.pushNavigate('${routePaths.tipo.path}/${snapshot.data!.data?[index].id}' );
                             },
                           ),
                           ElevatedButton(
