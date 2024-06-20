@@ -59,10 +59,58 @@ class _StartPageState extends State<StartPage> {
     }
   }
 
+
+  delete(int? id) async{
+    if(id!=null){
+       TipoControllerApi? tipoApi = context.read<AppAPI>().api.getTipoControllerApi();
+      try {
+       var retorno = await tipoApi.tipoControllerRemover(id: id);
+       inclusao.set(id.toString());
+       this.showMessage(context, "${retorno.data?.nome} excluido com sucesso!");
+      } on DioException catch (error) {
+        this.showMessage(context, "Erro:"+error.toString());
+        return error.error;
+      };
+    }
+  }
+
   void showMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message, style: const TextStyle(fontSize: 22.0)),
     ));
+  }
+
+  void showDialogConfirm(BuildContext context, String message, Function okAction){
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed:  () {
+        Navigator.of(context).pop(); // dismiss dialog
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Confirmar"),
+      onPressed:  () {
+        Navigator.of(context).pop(); // dismiss dialog
+        okAction();
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirmação?"),
+      content: Text(message),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    showDialog(
+        context: context,
+        builder:(BuildContext context) {
+          return alert;
+        }
+    );
   }
 
   @override
@@ -172,7 +220,9 @@ class _StartPageState extends State<StartPage> {
                           ElevatedButton(
                             child: const Text('Excluir'),
                             onPressed: () {
-                              /* ... */
+                              this.showDialogConfirm(context, "Confirmar Exclusão", () => {
+                                this.delete(snapshot.data!.data?[index].id)
+                              });
                             },
                           ),
                         ],

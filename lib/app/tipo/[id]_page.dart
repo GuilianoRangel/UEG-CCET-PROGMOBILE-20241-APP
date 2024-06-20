@@ -39,7 +39,7 @@ class _EditPageState extends State<EditPage> {
        }else{
          status.set(TipoDTOStatusEnum.INATIVO);
        }
-       debugPrint("Status:"+status.toString());
+       debugPrint("Status: "+status.toString());
      },);
   }
   AppAPI? appAPI;
