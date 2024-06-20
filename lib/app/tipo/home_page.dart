@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:college/college.dart';
+import 'package:confirmation_dialog/confirmation_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:interface_login_01/app/api/AppAPI.dart';
@@ -78,39 +79,6 @@ class _StartPageState extends State<StartPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message, style: const TextStyle(fontSize: 22.0)),
     ));
-  }
-
-  void showDialogConfirm(BuildContext context, String message, Function okAction){
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: Text("Cancel"),
-      onPressed:  () {
-        Navigator.of(context).pop(); // dismiss dialog
-      },
-    );
-    Widget continueButton = TextButton(
-      child: Text("Confirmar"),
-      onPressed:  () {
-        Navigator.of(context).pop(); // dismiss dialog
-        okAction();
-      },
-    );
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("Confirmação?"),
-      content: Text(message),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    showDialog(
-        context: context,
-        builder:(BuildContext context) {
-          return alert;
-        }
-    );
   }
 
   @override
@@ -220,7 +188,7 @@ class _StartPageState extends State<StartPage> {
                           ElevatedButton(
                             child: const Text('Excluir'),
                             onPressed: () {
-                              this.showDialogConfirm(context, "Confirmar Exclusão", () => {
+                              showDialogConfirm(context, "Confirmar Exclusão", () => {
                                 this.delete(snapshot.data!.data?[index].id)
                               });
                             },

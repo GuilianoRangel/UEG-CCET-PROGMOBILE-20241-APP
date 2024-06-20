@@ -41,6 +41,8 @@ dependencies:
   openapi_generator_annotations: ^5.0.2
   college:
     path: collegeapi
+  confirmation_dialog:
+    path: confirmation_dialog
   dio: ^5.4.2+1
   provider: ^6.1.2
   flutter_secure_storage: ^9.2.0

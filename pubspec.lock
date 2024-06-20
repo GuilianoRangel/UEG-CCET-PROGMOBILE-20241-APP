@@ -160,6 +160,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
+  confirmation_dialog:
+    dependency: "direct main"
+    description:
+      path: confirmation_dialog
+      relative: true
+    source: path
+    version: "0.0.1"
   convert:
     dependency: transitive
     description:
